@@ -175,6 +175,37 @@ app.post('/dep_manager', (req, res) => {
 app.get('/salaries.html', (req, res) => {
   res.render('salaries');
 });
+
+app.post('/salaries', (req, res) => {
+  const { emp_no, salary, from_date, to_date } = req.body;
+
+  // Check if emp_no exists in employees table
+  const checkEmpNoQuery = `SELECT * FROM employees WHERE emp_no = ${emp_no}`;
+
+  connection.query(checkEmpNoQuery, (checkErr, checkResult) => {
+    if (checkErr) {
+      console.error(checkErr);
+      res.status(500).send('Error checking employee data');
+    } else if (checkResult.length === 0) {
+      res.status(400).send(`Employee with ID ${emp_no} does not exist`);
+    } else {
+      // Insert into salaries table
+      const insertQuery = `INSERT INTO salaries (emp_no, salary, from_date, to_date) VALUES (${emp_no}, ${salary}, '${from_date}', '${to_date}')`;
+
+      connection.query(insertQuery, (insertErr, insertResult) => {
+        if (insertErr) {
+          console.error(insertErr);
+          res.status(500).send('Error saving salary data');
+        } else {
+          console.log(`Salary record with ID ${insertResult.insertId} saved to database`);
+          res.send('Salary data saved successfully');
+        }
+      });
+    }
+  });
+});
+
+
 app.get('/employees.html', (req, res) => {
   res.render('employees');
 });
