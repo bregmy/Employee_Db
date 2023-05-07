@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Search Titles</title>
+</head>
+<body>
+  <h1>Search Titles</h1>
+
+
+  <% if (titles.length === 0) { %>
+    <p>No titles found for search term '<%= search %>'</p>
+  <% } else { %>
+    <p>Found <%= titles.length %> titles for search term '<%= search %>'</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Employee Number</th>
+          <th>Title</th>
+          <th>From Date</th>
+          <th>To Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% titles.forEach(title => { %>
+          <tr>
+            <td><%= title.emp_no %></td>
+            <td><%= title.title %></td>
+            <td><%= title.from_date %></td>
+            <td><%= title.to_date %></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+
+</body>
+</html>

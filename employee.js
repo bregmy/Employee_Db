@@ -88,11 +88,10 @@ app.get('/', (req, res) => {
     <div class="options">
       <div class="title">What type of information would you like to store?</div>
  
- 
+      <button onclick="location.href='employees.html'">Employees</button>
       <button onclick="location.href='departments.html'">Departments</button>
       <button onclick="location.href='dept_employee.html'">Department Employees</button>
       <button onclick="location.href='department_manager.html'">Department Managers</button>
-      <button onclick="location.href='employees.html'">Employees</button>
       <button onclick="location.href='salaries.html'">Salaries</button>
       <button onclick="location.href='titles.html'">Titles</button>
     </div>
@@ -183,9 +182,80 @@ app.get('/department', (req, res) => {
 app.get('/dept_employee.html', (req, res) => {
   res.render('dept_employee');
 });
+
+
+app.post('/dep_employee', (req, res) => {
+  const { emp_no, dept_no, from_date, to_date } = req.body;
+  
+  // Check if emp_no and dept_no are provided
+  if (!emp_no || !dept_no) {
+    res.status(400).send('emp_no and dept_no are required');
+    return;
+  }
+
+  const sql = `INSERT INTO dept_emp (emp_no, dept_no, from_date, to_date) VALUES (?, ?, ?, ?)`;
+  const values = [emp_no, dept_no, from_date, to_date];
+
+  connection.query(sql, values, (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Cannot add or update a child row: a foreign key constraint fails (`employee`.`dept_emp`, CONSTRAINT `fk_dept_emp_emp_no` FOREIGN KEY (`emp_no`) REFERENCES `employees` (`emp_no`))');
+    } else {
+      console.log(`Department employee with emp_no ${emp_no} and dept_no ${dept_no} saved`);
+      res.send(`Department employee with emp_no ${emp_no} and dept_no ${dept_no} saved`);
+    }
+  });
+});
+
+
+
 app.get('/titles.html', (req, res) => {
   res.render('titles');
 });
+
+app.post('/titles', (req, res) => {
+  const emp_no = req.body.emp_no;
+  const title = req.body.title;
+  const from_date = req.body.from_date;
+  const to_date = req.body.to_date;
+  connection.query('INSERT INTO titles (emp_no, title, from_date, to_date) VALUES (?, ?, ?, ?)', [emp_no, title, from_date, to_date], (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send(' Cannot add or update a child row: a foreign key constraint fails (`employee`.`titles`, CONSTRAINT `fk_titles_emp_no` FOREIGN KEY (`emp_no`) REFERENCES `employees` (`emp_no`)) if you try to insert or update a record in the titles table that references a non-existent emp_no value in the employees table, the foreign key constraint will fail and you will get the error message you mentioned. To fix this error, you need to make sure that the emp_no value exists in the employees table before inserting or updating the corresponding record in the titles table.');
+    } else {
+      console.log('Title inserted into database.');
+      res.redirect('/titles.html'); // Redirect back to the titles page
+    }
+  });
+});
+
+app.get('/search_title', (req, res) => {
+  const searchTerm = req.query.search;
+
+  const sql = `SELECT emp_no, title, from_date, to_date FROM titles WHERE title LIKE ?`;
+
+  const values = [`%${searchTerm}%`];
+
+  connection.query(sql, values, (err, results) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error searching titles');
+    } else {
+      const titles = results.map(row => ({
+        emp_no: row.emp_no,
+        title: row.title,
+        from_date: row.from_date,
+        to_date: row.to_date,
+      }));
+
+      res.render('search_title', { searchTerm: searchTerm, titles: titles, search: searchTerm });
+
+    }
+  });
+});
+
+
+
 app.get('/department_manager.html', (req, res) => {
   res.render('department_manager');
 });
@@ -325,21 +395,24 @@ app.get('/search', (req, res) => {
 
 // Update an employee
 app.post('/update', (req, res) => {
-  const { emp_no, first_name, last_name, hire_date } = req.body;
+  const { emp_no } = req.body;
 
-  const sql = `UPDATE employees SET first_name = ?, last_name = ?, hire_date = ? WHERE emp_no = ?`;
-  const values = [first_name, last_name, hire_date, emp_no];
+  const sql = `SELECT * FROM employees WHERE emp_no = ?`;
+  const values = [emp_no];
 
   connection.query(sql, values, (err, result) => {
     if (err) {
       console.error(err);
-      res.status(500).send('Error updating employee');
+      res.status(500).send('Error retrieving employee information');
+    } else if (result.length === 0) {
+      res.status(404).send(`Employee with emp_no ${emp_no} not found`);
     } else {
-      console.log(`Employee with emp_no ${emp_no} updated`);
-      res.send(`Employee with emp_no ${emp_no} updated`);
+      console.log(`Employee with emp_no ${emp_no} retrieved`);
+      res.send(result[0]);
     }
   });
 });
+
 
 // Delete an employee
 app.post('/delete', (req, res) => {
@@ -351,7 +424,7 @@ app.post('/delete', (req, res) => {
   connection.query(sql, values, (err, result) => {
     if (err) {
       console.error(err);
-      res.status(500).send('Error deleting employee');
+      res.status(500).send('Cannot delete or update a parent row: a foreign key constraint fails (`employee`.`salaries`, CONSTRAINT `fk_salaries_emp_no` FOREIGN KEY (`emp_no`) REFERENCES `employees` (`emp_no`))');
     } else {
       console.log(`Employee with emp_no ${emp_no} deleted`);
       res.redirect('/');

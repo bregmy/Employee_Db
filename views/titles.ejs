@@ -79,7 +79,13 @@
        <input type="date" id="to_date" name="to_date" required><br>
 
 
-       <input type="button" value="Add Title" onclick="addTitle()">
+       <button type="submit" class="btn btn-success">Add Title </button>
    </form>
-   </body>
+   
+   <form action="/search_title" method="GET">
+       <label for="search">Search Titles:</label>
+       <input type="text" id="search" name="search">
+       <button type="submit">Search</button>
+   </form>
+</body>
 </html>
