@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delete Department</title>
+</head>
+<body>
+  <h1>Delete Department</h1>
+
+  <% if (department) { %>
+    <p>Are you sure you want to delete department <strong><%= department.dept_name %></strong> with ID <%= department.dept_no %>?</p>
+
+    <form method="POST" action="/department/<%= department.dept_no %>/delete">
+      <button type="submit">Delete Department</button>
+    </form>
+  <% } else { %>
+    <p>Department with ID <%= dept_no %> not found</p>
+  <% } %>
+
+  <a href="/department">Back to Department List</a>
+</body>
+</html>

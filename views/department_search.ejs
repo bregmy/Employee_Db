@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Department Search Results</title>
+    <style>
+      table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 5px;
+      }
+      th {
+        background-color: #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Department Search Results</h1>
+    <% if (departments.length === 0) { %>
+      <p>No departments found.</p>
+    <% } else { %>
+      <table>
+        <thead>
+          <tr>
+            <th>Department Number</th>
+            <th>Department Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% departments.forEach(department => { %>
+            <tr>
+              <td><%= department.dept_no %></td>
+              <td><%= department.dept_name %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </body>
+</html>
