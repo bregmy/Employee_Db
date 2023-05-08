@@ -82,22 +82,62 @@
         <button type="submit">Search Salary</button>
     </form>
  
-    <form action="/salaries" method="PUT">
-        <h1>Update Salary</h1>
-        <label for="emp_no">Employee Number:</label>
-        <input type="text" id="emp_no" name="emp_no" required><br>
- 
-        <label for="salary">New Salary:</label>
-        <input type="text" id="salary" name="salary" required><br>
- 
-        <label for="from_date">From Date:</label>
-        <input type="date" id="from_date" name="from_date" required><br>
- 
-        <label for="to_date">To Date:</label>
-        <input type="date" id="to_date" name="to_date" required><br>
- 
-        <button type="submit">Update Salary</button>
+    <form action="/update-salary" method="POST">
+      <h1>Update Salary</h1>
+      <label for="emp_no">Employee Number:</label>
+      <input type="text" id="emp_no" name="emp_no" required><br>
+    
+      <label for="salary">Salary:</label>
+      <input type="text" id="salary" name="salary" required><br>
+    
+      <label for="from_date">From Date:</label>
+      <input type="date" id="from_date" name="from_date" required><br>
+    
+      <label for="to_date">To Date:</label>
+      <input type="date" id="to_date" name="to_date" required><br>
+    
+      <button type="submit">Update Salary</button>
     </form>
+
+    <form action="/delete-salary" method="POST">
+      <h1>Delete Salary</h1>
+      <label for="emp_no">Employee Number:</label>
+      <input type="text" id="emp_no" name="emp_no" required><br>
+  
+      <label for="from_date">From Date:</label>
+      <input type="date" id="from_date" name="from_date" required><br>
+  
+      <button type="submit">Delete Salary</button>
+  </form>
+
+  
+  
+    <script>
+      $('#salary-form').on('submit', function(event) {
+        event.preventDefault();
+        const emp_no = $('#emp_no').val();
+        const salary = $('#salary').val();
+        const from_date = $('#from_date').val();
+        const to_date = $('#to_date').val();
+    
+        $.ajax({
+          url: '/salary',
+          method: 'PUT',
+          data: {
+            emp_no: emp_no,
+            salary: salary,
+            from_date: from_date,
+            to_date: to_date
+          },
+          success: function(response) {
+            console.log(response);
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown);
+          }
+        });
+      });
+    </script>
  </body>
  
 </html>

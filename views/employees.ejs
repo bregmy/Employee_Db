@@ -71,7 +71,7 @@
  <body>
 
 
-   <form method="POST" action="/employees">
+   <form method="POST" action="/employees" >
      <h1>Employee Information Form</h1>
      <label for="emp_no">Employee No:</label>
      <input type="text" id="emp_no" name="emp_no" required>
@@ -103,7 +103,7 @@
      <button type="submit">Submit</button>
    </form>
 
-   <form method="GET" action="/search">
+   <form method="GET" action="/search" >
     <h1>Employee Search Form</h1>
     <label for="search_term">Search Term:</label>
     <input type="text" id="search_term" name="search_term" required>
@@ -129,14 +129,18 @@
     <button type="submit">Update</button>
   </form>
   
-  <!-- Employee Delete Form -->
-  <form method="POST" action="/delete">
-    <h1>Employee Delete Form</h1>
-    <label for="emp_no">Employee No:</label>
-    <input type="text" id="emp_no" name="emp_no" required>
-  
-    <button type="submit">Delete</button>
-  </form>
+ <!-- Employee Delete Form -->
+ <form method="POST" action="/employee_delete" >
+  <h1>Employee Delete Form</h1>
+  <label for="emp_no">Employee No:</label>
+  <input type="text" id="emp_no" name="emp_no" required>
+
+  <button type="submit">Delete</button>
+</form>
+
+
+
+
 
  </body>
  

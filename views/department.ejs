@@ -113,24 +113,34 @@
 	<button type="submit">Search</button>
  </form>
  
- <form action="/department" method="PUT">
-	<h2>Update Department</h2>
-	<label for="dept_no">Department Number:</label>
-	<input type="text" id="dept_no" name="dept_no" required>
-	<br>
-	<label for="dept_name">Department Name:</label>
-	<input type="text" id="dept_name" name="dept_name">
-	<br>
-	<button type="submit">Update</button>
- </form>
- 
- <form action="/department/:dept_no" method="DELETE">
-	<h2>Delete Department</h2>
-	<label for="dept_no">Department Number:</label>
-	<input type="text" id="dept_no" name="dept_no" required>
-	<br>
-	<button type="submit">Delete</button>
- </form>
+ <form action="/update-department" method="POST">
+    <h1>Update Department</h1>
+  
+    <label for="dept_no">Department Number:</label>
+    <input type="text" id="dept_no" name="dept_no" required>
+  
+    <label for="dept_name">Department Name:</label>
+    <input type="text" id="dept_name" name="dept_name" required>
+  
+    <button type="submit">Update</button>
+  
+    <div class="error" id="error"></div>
+  </form>
+  
+  <form action="/delete-department" method="POST">
+    <h1>Delete Department</h1>
+  
+    <label for="dept_no">Department Number:</label>
+    <input type="text" id="dept_no" name="dept_no" required>
+  
+    <button type="submit">Delete</button>
+  
+    <div class="error" id="error"></div>
+  </form>
+  
+  
+  
+
 
   
 </body>

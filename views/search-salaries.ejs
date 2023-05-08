@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Salary Search Results</title>
+    <style>
+      table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 5px;
+      }
+      th {
+        background-color: #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Salary Search Results</h1>
+    <% if (salaries.length === 0) { %>
+      <p>No salaries found.</p>
+    <% } else { %>
+      <table>
+        <thead>
+          <tr>
+            <th>Employee Number</th>
+            <th>Salary</th>
+            <th>From Date</th>
+            <th>To Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% salaries.forEach(salary => { %>
+            <tr>
+              <td><%= salary.emp_no %></td>
+              <td><%= salary.salary %></td>
+              <td><%= salary.from_date.toDateString() %></td>
+              <td><%= salary.to_date.toDateString() %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </body>
+</html>

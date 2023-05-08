@@ -81,11 +81,41 @@
 
        <button type="submit" class="btn btn-success">Add Title </button>
    </form>
+
+   <form action="/update_title" method="POST">
+    <h1>Update Title</h1>
+    <label for="emp_no">Employee Number:</label>
+    <input type="text" id="emp_no" name="emp_no" required><br>
+ 
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title" required><br>
+ 
+    <label for="from_date">From Date:</label>
+    <input type="date" id="from_date" name="from_date" required><br>
+ 
+    <label for="to_date">To Date:</label>
+    <input type="date" id="to_date" name="to_date" required><br>
+ 
+    <button type="submit" class="btn btn-success">Update Title</button>
+</form>
+
    
    <form action="/search_title" method="GET">
        <label for="search">Search Titles:</label>
        <input type="text" id="search" name="search">
        <button type="submit">Search</button>
    </form>
+
+   <form action="/titles/delete" method="POST">
+    <h1>Delete Title</h1>
+    <label for="emp_no">Employee Number:</label>
+    <input type="text" id="emp_no" name="emp_no" required><br>
+
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title" required><br>
+
+    <button type="submit">Delete Title</button>
+</form>
+
 </body>
 </html>

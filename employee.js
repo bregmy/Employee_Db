@@ -123,44 +123,54 @@ app.post('/department', (req, res) => {
   });
 });
 
-// Update a department
-app.put('/department/:dept_no', (req, res) => {
-  const { dept_no } = req.params;
-  const { dept_name } = req.body;
-  const updateQuery = `UPDATE departments SET dept_name='${dept_name}' WHERE dept_no='${dept_no}'`;
-
-  // Update departments table
-  connection.query(updateQuery, (updateErr, updateResult) => {
-    if (updateErr) {
-      console.error(updateErr);
-      res.status(500).send('Error updating department data');
-    } else if (updateResult.affectedRows === 0) {
-      res.status(404).send(`Department with ID ${dept_no} not found`);
-    } else {
-      console.log(`Department with ID ${dept_no} updated successfully`);
-      res.send(`Department with ID ${dept_no} updated successfully`);
-    }
-  });
-});
-
 // Delete a department
-app.delete('/department/:dept_no', (req, res) => {
-  const { dept_no } = req.params;
-  const deleteQuery = `DELETE FROM departments WHERE dept_no='${dept_no}'`;
+app.post('/delete-department', (req, res) => {
+  const dept_no = req.body.dept_no;
 
-  // Delete from departments table
-  connection.query(deleteQuery, (deleteErr, deleteResult) => {
-    if (deleteErr) {
-      console.error(deleteErr);
-      res.status(500).send('Error deleting department data');
-    } else if (deleteResult.affectedRows === 0) {
-      res.status(404).send(`Department with ID ${dept_no} not found`);
+  const sql = `DELETE FROM departments WHERE dept_no = ?`;
+  const values = [dept_no];
+
+  connection.query(sql, values, (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error deleting department information');
+    } else if (result.affectedRows === 0) {
+      res.status(404).send(`Department with dept_no ${dept_no} not found`);
     } else {
-      console.log(`Department with ID ${dept_no} deleted successfully`);
-      res.send(`Department with ID ${dept_no} deleted successfully`);
+      console.log(`Department with dept_no ${dept_no} deleted`);
+      res.send(`Department with dept_no ${dept_no} deleted`);
     }
   });
 });
+
+
+app.post('/update-department', (req, res) => {
+  const { dept_no, dept_name } = req.body;
+
+  if (!dept_no || !dept_name) {
+    return res.status(400).send('Missing required parameters. Both dept_no and dept_name are required.');
+  }
+
+  const sql = `UPDATE departments SET dept_name = ? WHERE dept_no = ?`;
+  const values = [dept_name, dept_no];
+
+  connection.query(sql, values, (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send('Error updating department information');
+    } else if (result.affectedRows === 0) {
+      return res.status(404).send(`Department with dept_no ${dept_no} not found`);
+    } else {
+      console.log(`Department with dept_no ${dept_no} updated`);
+      return res.send(`Department with dept_no ${dept_no} updated`);
+    }
+  });
+});
+
+
+
+
+
 
 // Search for a department
 app.get('/department', (req, res) => {
@@ -208,11 +218,12 @@ app.post('/dep_employee', (req, res) => {
 });
 
 
-
+//get title
 app.get('/titles.html', (req, res) => {
   res.render('titles');
 });
 
+//Insert Title
 app.post('/titles', (req, res) => {
   const emp_no = req.body.emp_no;
   const title = req.body.title;
@@ -229,6 +240,7 @@ app.post('/titles', (req, res) => {
   });
 });
 
+//Search for title
 app.get('/search_title', (req, res) => {
   const searchTerm = req.query.search;
 
@@ -250,6 +262,44 @@ app.get('/search_title', (req, res) => {
 
       res.render('search_title', { searchTerm: searchTerm, titles: titles, search: searchTerm });
 
+    }
+  });
+});
+
+app.post('/update_title', (req, res) => {
+  const { emp_no, title, from_date, to_date } = req.body;
+
+  const sql = `UPDATE titles SET title = ?, from_date = ?, to_date = ? WHERE emp_no = ?`;
+  const values = [title, from_date, to_date, emp_no];
+
+  connection.query(sql, values, (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error updating title information');
+    } else if (result.affectedRows === 0) {
+      res.status(404).send(`Title for employee with emp_no ${emp_no} not found`);
+    } else {
+      console.log(`Title for employee with emp_no ${emp_no} updated`);
+      res.send(`Title for employee with emp_no ${emp_no} updated`);
+    }
+  });
+});
+
+app.post('/titles/delete', (req, res) => {
+  const { emp_no, title } = req.body;
+
+  const sql = `DELETE FROM titles WHERE emp_no = ? AND title = ?`;
+  const values = [emp_no, title];
+
+  connection.query(sql, values, (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error deleting title');
+    } else if (result.affectedRows === 0) {
+      res.status(404).send(`Title for employee with emp_no ${emp_no} and title ${title} not found`);
+    } else {
+      console.log(`Title for employee with emp_no ${emp_no} and title ${title} deleted`);
+      res.send(`Title for employee with emp_no ${emp_no} and title ${title} deleted`);
     }
   });
 });
@@ -339,6 +389,65 @@ app.post('/salaries', (req, res) => {
   });
 });
 
+// Search for salaries
+app.get('/salaries', (req, res) => {
+  const { emp_no } = req.query;
+  const searchQuery = `SELECT * FROM salaries WHERE emp_no LIKE '%${emp_no}%'`;
+
+  connection.query(searchQuery, (searchErr, searchResult) => {
+    if (searchErr) {
+      console.error(searchErr);
+      res.status(500).send('Error searching salary data');
+    } else {
+      console.log(`Found ${searchResult.length} salaries`);
+      res.render('search-salaries', { salaries: searchResult });
+    }
+  });
+});
+
+app.post('/update-salary', (req, res) => {
+  const { emp_no, salary, from_date, to_date } = req.body;
+
+  const sql = `UPDATE salaries SET salary = ?, from_date = ?, to_date = ? WHERE emp_no = ?`;
+  const values = [salary, from_date, to_date, emp_no];
+
+  connection.query(sql, values, (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error updating salary information');
+    } else if (result.affectedRows === 0) {
+      res.status(404).send(`Salary record for employee with emp_no ${emp_no} not found`);
+    } else {
+      console.log(`Salary record for employee with emp_no ${emp_no} updated`);
+      res.send(`Salary record for employee with emp_no ${emp_no} updated`);
+    }
+  });
+});
+
+app.post('/delete-salary', (req, res) => {
+  const emp_no = req.body.emp_no;
+  const from_date = req.body.from_date;
+
+  const sql = `DELETE FROM salaries WHERE emp_no = ? AND from_date = ?`;
+  const values = [emp_no, from_date];
+
+  connection.query(sql, values, (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error deleting salary information');
+    } else if (result.affectedRows === 0) {
+      res.status(404).send(`Salary record for employee ${emp_no} with from_date ${from_date} not found`);
+    } else {
+      console.log(`Salary record for employee ${emp_no} with from_date ${from_date} deleted`);
+      res.send(`Salary record for employee ${emp_no} with from_date ${from_date} deleted`);
+    }
+  });
+});
+
+
+
+
+
 
 app.get('/employees.html', (req, res) => {
   res.render('employees');
@@ -395,30 +504,30 @@ app.get('/search', (req, res) => {
 
 // Update an employee
 app.post('/update', (req, res) => {
-  const { emp_no } = req.body;
+  const { emp_no, first_name, last_name, hire_date } = req.body;
 
-  const sql = `SELECT * FROM employees WHERE emp_no = ?`;
-  const values = [emp_no];
+  const sql = `UPDATE employees SET first_name = ?, last_name = ?, hire_date = ? WHERE emp_no = ?`;
+  const values = [first_name, last_name, hire_date, emp_no];
 
   connection.query(sql, values, (err, result) => {
     if (err) {
       console.error(err);
-      res.status(500).send('Error retrieving employee information');
-    } else if (result.length === 0) {
+      res.status(500).send('Error updating employee information');
+    } else if (result.affectedRows === 0) {
       res.status(404).send(`Employee with emp_no ${emp_no} not found`);
     } else {
-      console.log(`Employee with emp_no ${emp_no} retrieved`);
-      res.send(result[0]);
+      console.log(`Employee with emp_no ${emp_no} updated`);
+      res.send(`Employee with emp_no ${emp_no} updated`);
     }
   });
 });
 
 
 // Delete an employee
-app.post('/delete', (req, res) => {
+app.post('/employee_delete', (req, res) => {
   const emp_no = req.body.emp_no;
 
-  const sql = `DELETE FROM employees WHERE emp_no = ?`;
+  const sql = `DELETE FROM employees WHERE emp_no = ${emp_no}`;
   const values = [emp_no];
 
   connection.query(sql, values, (err, result) => {
@@ -427,10 +536,12 @@ app.post('/delete', (req, res) => {
       res.status(500).send('Cannot delete or update a parent row: a foreign key constraint fails (`employee`.`salaries`, CONSTRAINT `fk_salaries_emp_no` FOREIGN KEY (`emp_no`) REFERENCES `employees` (`emp_no`))');
     } else {
       console.log(`Employee with emp_no ${emp_no} deleted`);
-      res.redirect('/');
+      res.send(`Employee with emp_no ${emp_no} deleted`);
     }
   });
 });
+
+
 
 
 
